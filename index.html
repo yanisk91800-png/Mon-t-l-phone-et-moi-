@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mon Téléphone & Moi — Votre téléphone, enfin simple.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Playfair+Display:ital,wght@0,700;0,800;1,700&display=swap" rel="stylesheet" />
+
+  <!--
+  ╔══════════════════════════════════════════════════════════════════╗
+  ║  SEULE CHOSE RESTANTE À FAIRE :                                 ║
+  ║  Cherchez (Ctrl+F) :  VOTRE_NOM_COMPLET                        ║
+  ║  Remplacez par votre prénom + nom (ex: Yanis Kananga)           ║
+  ║  → 1 seule occurrence en bas de page                           ║
+  ╚══════════════════════════════════════════════════════════════════╝
+  -->
+
+  <style>
+    :root {
+      --blue-deep:   #1a3a6b;
+      --blue-mid:    #2255a4;
+      --blue-light:  #ddeeff;
+      --blue-pale:   #f0f6ff;
+      --green:       #2a9461;
+      --green-h:     #1e7a4f;
+      --green-light: #e6f7ef;
+      --white:       #ffffff;
+      --gray-light:  #e8edf3;
+      --gray-mid:    #7a8899;
+      --text:        #1a2535;
+      --text-mid:    #3d4f63;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Nunito', sans-serif; font-size: 18px; line-height: 1.7; color: var(--text); background: var(--white); overflow-x: hidden; }
+
+    .tag { display: inline-block; font-size: 0.7rem; font-weight: 900; letter-spacing: 0.14em; text-transform: uppercase; padding: 0.32rem 0.95rem; border-radius: 100px; margin-bottom: 1rem; background: var(--blue-light); color: var(--blue-mid); }
+    .tag.g { background: var(--green-light); color: var(--green); }
+
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; font-family: 'Nunito', sans-serif; font-weight: 800; border-radius: 100px; text-decoration: none; cursor: pointer; border: none; transition: all .25s; white-space: nowrap; }
+    .btn-green  { background: var(--green); color: white; box-shadow: 0 4px 20px rgba(42,148,97,.32); }
+    .btn-green:hover  { background: var(--green-h); transform: translateY(-3px); box-shadow: 0 8px 28px rgba(42,148,97,.42); }
+    .btn-blue   { background: var(--blue-mid); color: white; }
+    .btn-blue:hover   { background: var(--blue-deep); transform: translateY(-3px); }
+    .btn-outline{ background: transparent; color: var(--blue-mid); border: 2.5px solid var(--blue-mid); }
+    .btn-outline:hover{ background: var(--blue-mid); color: white; }
+    .sm { font-size: 0.92rem; padding: 0.6rem 1.5rem; }
+    .md { font-size: 1.05rem; padding: 0.88rem 2.2rem; }
+    .lg { font-size: 1.2rem;  padding: 1.1rem 2.8rem; }
+    .xl { font-size: 1.28rem; padding: 1.25rem 3.2rem; }
+
+    /* NAV */
+    #nav { position: fixed; top: 0; left: 0; right: 0; z-index: 200; padding: 1rem 3rem; display: flex; align-items: center; justify-content: space-between; transition: all .35s; }
+    #nav.scrolled { background: rgba(255,255,255,.97); backdrop-filter: blur(20px); border-bottom: 2px solid var(--blue-light); box-shadow: 0 2px 16px rgba(26,58,107,.08); }
+    .nav-logo { font-size: 1.4rem; font-weight: 900; color: var(--blue-deep); text-decoration: none; }
+    .nav-logo .amp { color: var(--green); }
+    .nav-links { display: flex; align-items: center; gap: 1.8rem; }
+    .nav-links a { font-size: 0.97rem; font-weight: 700; color: var(--blue-deep); text-decoration: none; transition: color .2s; }
+    .nav-links a:hover { color: var(--blue-mid); }
+    .nav-ham { display: none; background: none; border: none; cursor: pointer; padding: 4px; }
+    #nav-mobile { display: none; flex-direction: column; gap: 1rem; padding: 1.2rem 1.5rem; background: white; border-top: 2px solid var(--blue-light); }
+    #nav-mobile a { font-size: 1.05rem; font-weight: 700; color: var(--blue-deep); text-decoration: none; }
+
+    /* HERO */
+    .hero { background: linear-gradient(155deg, var(--blue-pale) 0%, #fff 55%); padding: 10rem 3rem 6rem; position: relative; overflow: hidden; }
+    .hero::after { content: ''; position: absolute; right: -80px; top: -80px; width: 50vw; height: 50vw; border-radius: 50%; background: radial-gradient(circle, rgba(34,85,164,.07) 0%, transparent 65%); pointer-events: none; }
+    .hero-inner { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 3.5rem; align-items: center; }
+    .compat-pill { display: inline-flex; align-items: center; gap: 0.55rem; background: white; border: 2px solid var(--green-light); border-radius: 100px; padding: 0.45rem 1.1rem; font-size: 0.9rem; font-weight: 700; color: var(--green); margin-bottom: 1.6rem; box-shadow: 0 2px 10px rgba(42,148,97,.1); opacity: 0; animation: fadeUp .7s ease .1s forwards; }
+    .hero-title  { opacity: 0; animation: fadeUp .8s ease .25s forwards; margin-bottom: 1.4rem; }
+    .hero-lead   { opacity: 0; animation: fadeUp .8s ease .4s  forwards; margin-bottom: 2rem; }
+    .hero-btns   { opacity: 0; animation: fadeUp .8s ease .55s forwards; display: flex; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.8rem; }
+    .hero-checks { opacity: 0; animation: fadeUp .8s ease .7s  forwards; display: flex; flex-wrap: wrap; gap: 0.9rem; margin-bottom: 1.2rem; }
+    .hero-gift   { opacity: 0; animation: fadeUp .8s ease .85s forwards; font-size: 0.9rem; font-weight: 700; color: var(--gray-mid); }
+    .hero-gift a { color: var(--blue-mid); font-weight: 800; text-decoration: none; }
+    .chk { display: flex; align-items: center; gap: 0.4rem; font-size: 0.92rem; font-weight: 700; color: var(--gray-mid); }
+    .chk-ico { width: 21px; height: 21px; border-radius: 50%; background: var(--green-light); color: var(--green); display: flex; align-items: center; justify-content: center; font-size: 0.65rem; font-weight: 900; flex-shrink: 0; }
+    .display { font-family: 'Playfair Display', serif; font-size: clamp(2.6rem,5vw,4.2rem); font-weight: 800; line-height: 1.1; color: var(--blue-deep); }
+    .display em { font-style: italic; color: var(--blue-mid); }
+    h2 { font-family: 'Playfair Display', serif; font-size: clamp(1.9rem,3.2vw,2.8rem); font-weight: 700; line-height: 1.2; color: var(--blue-deep); }
+    h2 em { font-style: italic; color: var(--blue-mid); }
+    h3 { font-size: 1.18rem; font-weight: 900; color: var(--blue-deep); line-height: 1.3; }
+    p  { font-size: 1.05rem; color: var(--text-mid); line-height: 1.8; }
+
+    .hero-vis { opacity: 0; animation: fadeIn 1s ease .5s forwards; display: flex; flex-direction: column; gap: 0.9rem; }
+    .hcard { background: white; border-radius: 16px; padding: 1.1rem 1.4rem; box-shadow: 0 4px 20px rgba(26,58,107,.09); border: 2px solid var(--gray-light); display: flex; align-items: center; gap: 1rem; transition: transform .3s; }
+    .hcard:hover { transform: translateX(6px); }
+    .hcard-ico { width: 46px; height: 46px; border-radius: 12px; background: var(--blue-pale); display: flex; align-items: center; justify-content: center; font-size: 1.45rem; flex-shrink: 0; }
+    .hcard-t { font-size: 0.95rem; font-weight: 800; color: var(--blue-deep); }
+    .hcard-s { font-size: 0.78rem; font-weight: 600; color: var(--gray-mid); }
+    .hbadge { font-size: 0.67rem; font-weight: 900; padding: 0.22rem 0.65rem; border-radius: 100px; letter-spacing: 0.04em; text-transform: uppercase; white-space: nowrap; margin-left: auto; }
+
+    /* STATS */
+    .stats { background: var(--blue-deep); padding: 2.8rem 3rem; }
+    .stats-in { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: repeat(4,1fr); }
+    .stt { text-align: center; padding: 0 1.5rem; border-right: 1px solid rgba(255,255,255,.1); }
+    .stt:last-child { border-right: none; }
+    .stt-n { font-family: 'Playfair Display',serif; font-size: 3rem; font-weight: 800; color: #7dd3b0; line-height: 1; display: block; }
+    .stt-l { font-size: 0.87rem; font-weight: 700; color: rgba(255,255,255,.55); margin-top: .38rem; display: block; }
+
+    /* LAYOUT */
+    .section   { padding: 5.5rem 3rem; }
+    .sect-alt  { background: var(--blue-pale); }
+    .sect-dark { background: var(--blue-deep); }
+    .container { max-width: 1100px; margin: 0 auto; }
+    .sh        { max-width: 680px; margin-bottom: 3rem; }
+    .sh p      { margin-top: 1rem; }
+    .sh.cx     { text-align: center; margin-left: auto; margin-right: auto; }
+
+    /* MODULES */
+    .filters { display: flex; flex-wrap: wrap; gap: .65rem; margin-bottom: 2.5rem; }
+    .fbtn { font-family: 'Nunito',sans-serif; font-size: 0.97rem; font-weight: 800; padding: .55rem 1.3rem; border-radius: 100px; border: 2.5px solid var(--gray-light); background: white; color: var(--text-mid); cursor: pointer; transition: all .2s; }
+    .fbtn:hover, .fbtn.active { background: var(--blue-deep); border-color: var(--blue-deep); color: white; }
+    .mgrid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.3rem; }
+    .mc { background: white; border-radius: 18px; padding: 1.8rem; border: 2px solid var(--gray-light); display: flex; flex-direction: column; transition: all .3s; }
+    .mc:hover { border-color: var(--blue-mid); transform: translateY(-4px); box-shadow: 0 14px 40px rgba(26,58,107,.1); }
+    .mc.bonus { border: 3px dashed #f0c040; background: #fffdf0; }
+    .mnum  { font-size: .68rem; font-weight: 900; letter-spacing: .14em; text-transform: uppercase; color: var(--blue-mid); margin-bottom: .75rem; }
+    .micon { font-size: 2.1rem; margin-bottom: .75rem; display: block; }
+    .mtitle{ font-size: 1.12rem; font-weight: 900; color: var(--blue-deep); line-height: 1.3; margin-bottom: .65rem; }
+    .mdesc { font-size: .97rem; color: var(--text-mid); line-height: 1.65; flex: 1; margin-bottom: .9rem; }
+    .mben  { font-size: .88rem; color: var(--gray-mid); font-style: italic; line-height: 1.55; padding-top: .85rem; border-top: 1.5px solid var(--gray-light); margin-bottom: .9rem; }
+    .mfoot { display: flex; align-items: center; justify-content: space-between; }
+    .mtime { font-size: .85rem; font-weight: 700; color: var(--gray-mid); }
+    .mtag  { font-size: .67rem; font-weight: 900; padding: .25rem .7rem; border-radius: 100px; text-transform: uppercase; letter-spacing: .04em; }
+
+    /* PIONEER */
+    .pioneer { background: linear-gradient(135deg,#fffbeb,#fef3c7); border-top: 3px solid #f0c040; border-bottom: 3px solid #f0c040; padding: 4.5rem 3rem; }
+    .pioneer-in { max-width: 720px; margin: 0 auto; text-align: center; }
+    .pio-badge { display: inline-flex; align-items: center; gap: .5rem; background: #f0c040; color: #5a3e00; font-size: .73rem; font-weight: 900; letter-spacing: .12em; text-transform: uppercase; padding: .32rem 1rem; border-radius: 100px; margin-bottom: 1.3rem; }
+    .pioneer-in h2 { margin-bottom: 1rem; }
+    .pioneer-in > p { font-size: 1.05rem; margin-bottom: 1.8rem; }
+    .spots { display: inline-flex; align-items: center; gap: 1rem; background: white; border: 2px solid #f0c040; border-radius: 13px; padding: .85rem 1.5rem; margin-bottom: 2rem; }
+    .dots { display: flex; gap: 4px; }
+    .dot   { width: 11px; height: 11px; border-radius: 50%; background: #f0c040; }
+    .dot.e { background: #f0e8c0; }
+    .spots-t { font-size: .92rem; font-weight: 800; color: var(--blue-deep); }
+
+    /* TRUST */
+    .tgrid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.3rem; }
+    .tc { background: white; border-radius: 18px; padding: 2rem; border: 2px solid var(--gray-light); transition: all .3s; }
+    .tc:hover { border-color: var(--blue-mid); box-shadow: 0 14px 40px rgba(26,58,107,.09); transform: translateY(-4px); }
+    .tico { width: 50px; height: 50px; border-radius: 14px; display: flex; align-items: center; justify-content: center; margin-bottom: 1.2rem; font-size: 1.5rem; }
+    .tc h3 { margin-bottom: .55rem; }
+    .tc p  { font-size: .93rem; }
+
+    /* FOUNDER */
+    .founder-in { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1.3fr; gap: 5rem; align-items: center; }
+    .found-av { width: 150px; height: 150px; border-radius: 50%; background: rgba(255,255,255,.1); border: 3px solid rgba(255,255,255,.2); display: flex; align-items: center; justify-content: center; font-size: 4.5rem; margin: 0 auto 1.8rem; }
+    .found-q  { font-family: 'Playfair Display',serif; font-size: 1.6rem; font-style: italic; font-weight: 700; color: rgba(255,255,255,.9); line-height: 1.45; }
+    .found-q em { color: #7dd3b0; }
+    .found-r .tag { background: rgba(34,85,164,.4); color: #a5c8f0; }
+    .found-r h2 { color: white; margin-bottom: 1.1rem; }
+    .found-r > p { color: rgba(255,255,255,.65); margin-top: .9rem; }
+    .fvals { display: flex; gap: .8rem; margin-top: 1.8rem; flex-wrap: wrap; }
+    .fval { display: flex; align-items: center; gap: .5rem; background: rgba(255,255,255,.07); border: 1.5px solid rgba(255,255,255,.12); border-radius: 100px; padding: .45rem 1rem; font-size: .92rem; font-weight: 700; color: rgba(255,255,255,.8); }
+    .found-sub { font-size: .8rem; color: rgba(255,255,255,.3); margin-top: .75rem; font-weight: 700; }
+
+    /* TESTIMONIALS */
+    .test-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 1.3rem; }
+    .tcard { border-radius: 18px; padding: 2rem; border: 2px solid var(--gray-light); transition: all .3s; }
+    .tcard:hover { box-shadow: 0 10px 30px rgba(26,58,107,.08); transform: translateY(-3px); }
+    .stars { display: flex; gap: 3px; margin-bottom: 1rem; font-size: 1rem; color: #f0c040; }
+    .tcard p { font-style: italic; font-size: 1rem; margin-bottom: 1.3rem; }
+    .tauthor { display: flex; align-items: center; gap: .8rem; }
+    .tav   { width: 42px; height: 42px; border-radius: 50%; background: var(--blue-deep); display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 1rem; flex-shrink: 0; }
+    .tname { font-size: .93rem; font-weight: 800; color: var(--blue-deep); }
+    .tloc  { font-size: .78rem; font-weight: 600; color: var(--gray-mid); }
+
+    /* PRICING */
+    .pgrid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.3rem; max-width: 960px; margin: 0 auto; }
+    .pc { border-radius: 26px; padding: 2.4rem; border: 2.5px solid var(--gray-light); position: relative; background: white; transition: all .3s; }
+    .pc:hover { box-shadow: 0 20px 56px rgba(26,58,107,.13); transform: translateY(-4px); }
+    .pc.feat { background: var(--blue-deep); border-color: var(--blue-deep); }
+    .pc.feat::before { content: '⭐ Recommandé'; position: absolute; top: -17px; left: 50%; transform: translateX(-50%); background: var(--green); color: white; font-size: .73rem; font-weight: 900; letter-spacing: .06em; padding: .32rem 1.1rem; border-radius: 100px; white-space: nowrap; }
+    .pname { font-size: .71rem; font-weight: 900; letter-spacing: .15em; text-transform: uppercase; color: var(--blue-mid); margin-bottom: .9rem; }
+    .pc.feat .pname { color: #7dd3b0; }
+    .pnum  { font-family: 'Playfair Display',serif; font-size: 4.3rem; font-weight: 800; line-height: 1; color: var(--blue-deep); display: flex; align-items: flex-start; gap: .1rem; }
+    .pc.feat .pnum { color: white; }
+    .pnum sup { font-size: 1.7rem; margin-top: .45rem; font-weight: 700; }
+    .pper  { font-size: .88rem; font-weight: 700; color: var(--gray-mid); margin: .3rem 0 1.8rem; }
+    .pc.feat .pper { color: rgba(255,255,255,.5); }
+    .pfeat { list-style: none; display: flex; flex-direction: column; gap: .75rem; margin-bottom: 2rem; }
+    .pfeat li { display: flex; align-items: flex-start; gap: .55rem; font-size: .97rem; font-weight: 600; color: var(--text-mid); line-height: 1.5; }
+    .pc.feat .pfeat li { color: rgba(255,255,255,.8); }
+    .pci { width: 21px; height: 21px; border-radius: 50%; background: var(--green-light); color: var(--green); display: flex; align-items: center; justify-content: center; font-size: .65rem; font-weight: 900; flex-shrink: 0; margin-top: 2px; }
+    .pc.feat .pci { background: rgba(125,211,176,.2); color: #7dd3b0; }
+    .pbtn { display: block; width: 100%; text-align: center; font-family: 'Nunito',sans-serif; font-size: 1rem; font-weight: 800; padding: .95rem; border-radius: 100px; text-decoration: none; cursor: pointer; border: none; transition: all .25s; }
+    .pb-out { background: transparent; border: 2.5px solid var(--blue-mid); color: var(--blue-mid); }
+    .pb-out:hover { background: var(--blue-mid); color: white; }
+    .pb-grn { background: var(--green); color: white; box-shadow: 0 4px 14px rgba(42,148,97,.35); }
+    .pb-grn:hover { background: var(--green-h); transform: translateY(-1px); }
+    .pb-wht { background: rgba(255,255,255,.1); color: white; border: 2px solid rgba(255,255,255,.22); }
+    .pb-wht:hover { background: rgba(255,255,255,.2); }
+    .pnote { text-align: center; font-size: .76rem; font-weight: 600; color: var(--gray-mid); margin-top: .85rem; }
+    .pc.feat .pnote { color: rgba(255,255,255,.3); }
+    .pgift { max-width: 960px; margin: 2rem auto 0; background: var(--green-light); border: 2px solid rgba(42,148,97,.2); border-radius: 16px; padding: 1.3rem 1.8rem; text-align: center; font-size: .98rem; font-weight: 700; color: var(--text-mid); }
+    .pgift a { color: var(--green); text-decoration: none; font-weight: 800; }
+
+    /* FAQ */
+    .faq-wrap { max-width: 760px; margin: 0 auto; }
+    .fitem { border-bottom: 2px solid var(--gray-light); }
+    .fq { width: 100%; background: none; border: none; text-align: left; padding: 1.5rem 0; display: flex; align-items: center; justify-content: space-between; cursor: pointer; gap: 1rem; font-family: 'Nunito',sans-serif; font-size: 1.1rem; font-weight: 800; color: var(--blue-deep); transition: color .2s; }
+    .fq:hover { color: var(--blue-mid); }
+    .fq-ic { width: 34px; height: 34px; border-radius: 50%; border: 2.5px solid var(--gray-light); display: flex; align-items: center; justify-content: center; font-size: 1.1rem; font-weight: 900; color: var(--gray-mid); transition: all .3s; flex-shrink: 0; }
+    .fitem.open .fq-ic { background: var(--green); border-color: var(--green); color: white; transform: rotate(45deg); }
+    .fitem.open .fq { color: var(--blue-mid); }
+    .fbody { max-height: 0; overflow: hidden; transition: max-height .4s ease; }
+    .fitem.open .fbody { max-height: 320px; }
+    .fbody-in { padding-bottom: 1.5rem; font-size: 1.02rem; color: var(--text-mid); line-height: 1.8; }
+
+    /* FAMILY */
+    .fam-in { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 4.5rem; align-items: start; }
+    .fam-l .tag { background: rgba(42,148,97,.25); color: #7dd3b0; }
+    .fam-l h2 { color: white; margin-bottom: 1.1rem; }
+    .fam-l h2 em { color: #7dd3b0; }
+    .fscen { font-size: 1.05rem; color: rgba(255,255,255,.65); line-height: 1.8; margin-bottom: 1.4rem; }
+    .fquotes { display: flex; flex-direction: column; gap: .55rem; margin-bottom: 1.8rem; }
+    .fqi { display: inline-flex; align-items: center; gap: .5rem; background: rgba(255,255,255,.06); border: 1.5px solid rgba(255,255,255,.1); border-radius: 100px; padding: .45rem 1.1rem; font-size: .97rem; font-weight: 700; color: rgba(255,255,255,.75); width: fit-content; }
+    .fhl { background: rgba(255,255,255,.05); border-left: 4px solid #7dd3b0; padding: 1.3rem 1.5rem; border-radius: 0 12px 12px 0; margin-bottom: 2rem; }
+    .fhl p { font-size: 1.02rem; color: rgba(255,255,255,.8); line-height: 1.75; }
+    .fhl strong { color: #7dd3b0; }
+    .fres { font-size: 1.02rem; color: rgba(255,255,255,.65); line-height: 1.8; margin-bottom: 2.2rem; }
+    .fres strong { color: #7dd3b0; }
+    .fsub { font-size: .8rem; color: rgba(255,255,255,.3); margin-top: .8rem; font-weight: 700; }
+    .fcards { display: flex; flex-direction: column; gap: 1rem; }
+    .fcard { background: rgba(255,255,255,.06); border: 1.5px solid rgba(255,255,255,.1); border-radius: 16px; padding: 1.4rem; transition: all .3s; }
+    .fcard:hover { background: rgba(42,148,97,.12); border-color: rgba(125,211,176,.35); transform: translateX(8px); }
+    .fcard-em { font-size: 1.45rem; display: block; margin-bottom: .5rem; }
+    .fcard h3 { color: white; font-size: 1.02rem; margin-bottom: .35rem; }
+    .fcard p  { font-size: .9rem; color: rgba(255,255,255,.55); line-height: 1.6; }
+
+    /* FINAL CTA */
+    .final { background: linear-gradient(155deg,var(--blue-pale) 0%,white 60%); padding: 6.5rem 3rem; text-align: center; }
+    .final h2 { margin-bottom: 1.2rem; }
+    .final > .container > p { max-width: 520px; margin: 0 auto 2.4rem; font-size: 1.12rem; }
+    .fbadges { display: flex; flex-wrap: wrap; justify-content: center; gap: .9rem; margin-top: 2.2rem; }
+    .fbadge { display: flex; align-items: center; gap: .4rem; background: white; border: 2px solid var(--gray-light); border-radius: 100px; padding: .45rem 1.1rem; font-size: .87rem; font-weight: 800; color: var(--text-mid); box-shadow: 0 2px 8px rgba(26,58,107,.06); }
+    .fbadge .ic { color: var(--green); font-weight: 900; }
+
+    /* FOOTER */
+    footer { background: var(--blue-deep); padding: 2.5rem 3rem; }
+    .foot-inner { max-width: 1100px; margin: 0 auto; }
+    .foot-top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1.4rem; padding-bottom: 1.4rem; border-bottom: 1px solid rgba(255,255,255,.1); }
+    .foot-logo { font-size: 1.2rem; font-weight: 900; color: white; }
+    .foot-logo .amp { color: #7dd3b0; }
+    .foot-links { display: flex; gap: 1.5rem; flex-wrap: wrap; }
+    .foot-links a { font-size: .83rem; font-weight: 700; color: rgba(255,255,255,.45); text-decoration: none; transition: color .2s; }
+    .foot-links a:hover { color: rgba(255,255,255,.9); }
+    .foot-bottom { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .8rem; }
+    .foot-copy  { font-size: .76rem; font-weight: 600; color: rgba(255,255,255,.3); }
+    .foot-legal { font-size: .76rem; font-weight: 700; color: rgba(255,255,255,.5); background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12); border-radius: 8px; padding: .4rem .9rem; }
+
+    /* WHATSAPP FLOAT */
+    #wa-btn { position: fixed; bottom: 1.8rem; right: 1.8rem; width: 62px; height: 62px; border-radius: 50%; background: #25D366; display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 28px rgba(37,211,102,.5); z-index: 999; text-decoration: none; transition: all .4s; opacity: 0; transform: scale(.7) translateY(20px); pointer-events: none; }
+    #wa-btn.show { opacity: 1; transform: scale(1) translateY(0); pointer-events: auto; }
+    #wa-btn:hover { transform: scale(1.1) translateY(-2px); }
+    .wa-tip { position: absolute; right: 72px; top: 50%; transform: translateY(-50%); background: var(--blue-deep); color: white; font-size: .8rem; font-weight: 700; padding: .4rem .85rem; border-radius: 8px; white-space: nowrap; opacity: 0; transition: opacity .2s; pointer-events: none; }
+    .wa-tip::after { content: ''; position: absolute; right: -6px; top: 50%; transform: translateY(-50%); border: 6px solid transparent; border-left-color: var(--blue-deep); border-right: none; }
+    #wa-btn:hover .wa-tip { opacity: 1; }
+
+    @keyframes fadeUp  { from{opacity:0;transform:translateY(28px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes fadeIn  { from{opacity:0} to{opacity:1} }
+    .reveal { opacity:0; transform:translateY(30px); transition: opacity .65s ease, transform .65s ease; }
+    .reveal.in { opacity:1; transform:translateY(0); }
+
+    @media(max-width:960px){
+      #nav { padding: 1rem 1.5rem; }
+      .nav-links { display: none; }
+      .nav-ham { display: block; }
+      .hero { padding: 8rem 1.5rem 4rem; }
+      .hero-inner { grid-template-columns: 1fr; }
+      .hero-vis { display: none; }
+      .stats { padding: 2.5rem 1.5rem; }
+      .stats-in { grid-template-columns: repeat(2,1fr); gap: 1.5rem; }
+      .stt { border-right: none; }
+      .section { padding: 4rem 1.5rem; }
+      .mgrid { grid-template-columns: 1fr; }
+      .tgrid { grid-template-columns: 1fr; }
+      .pgrid { grid-template-columns: 1fr; max-width: 400px; margin: 0 auto; }
+      .founder-in { grid-template-columns: 1fr; gap: 3rem; }
+      .test-grid { grid-template-columns: 1fr; }
+      .fam-in { grid-template-columns: 1fr; gap: 3rem; }
+      footer { padding: 2rem 1.5rem; }
+      .foot-top, .foot-bottom { flex-direction: column; align-items: flex-start; }
+    }
+    @media(max-width:640px){
+      body { font-size: 16px; }
+      .hero-btns { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══ NAV ══ -->
+<nav id="nav">
+  <a class="nav-logo" href="#">📱 Mon Téléphone <span class="amp">&amp;</span> Moi</a>
+  <div class="nav-links">
+    <a href="#modules">Les modules</a>
+    <a href="#tarifs">Tarifs</a>
+    <a href="#familles">Pour les familles</a>
+    <a href="#faq">FAQ</a>
+    <a href="https://www.paypal.me/yaniskananga" target="_blank" class="btn btn-green sm">Commencer →</a>
+  </div>
+  <button class="nav-ham" onclick="toggleMenu()">
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#1a3a6b" stroke-width="2.5" stroke-linecap="round">
+      <line x1="3" y1="6"  x2="21" y2="6"/>
+      <line x1="3" y1="12" x2="21" y2="12"/>
+      <line x1="3" y1="18" x2="21" y2="18"/>
+    </svg>
+  </button>
+</nav>
+<div id="nav-mobile">
+  <a href="#modules"  onclick="closeMenu()">Les modules</a>
+  <a href="#tarifs"   onclick="closeMenu()">Tarifs</a>
+  <a href="#familles" onclick="closeMenu()">Pour les familles</a>
+  <a href="#faq"      onclick="closeMenu()">FAQ</a>
+  <a href="https://www.paypal.me/yaniskananga" target="_blank" onclick="closeMenu()" class="btn btn-green md">Commencer →</a>
+</div>
+
+
+<!-- ══ HERO ══ -->
+<section class="hero">
+  <div class="hero-inner">
+    <div>
+      <div class="compat-pill">✅ Fonctionne sur iPhone ET Android</div>
+      <div class="hero-title">
+        <h1 class="display">Votre téléphone,<br><em>enfin simple.</em></h1>
+      </div>
+      <div class="hero-lead">
+        <p style="font-size:1.18rem;font-weight:500;color:#3d4f63;line-height:1.75">Ne plus déranger vos enfants à chaque question. Ne plus avoir peur de toucher votre téléphone. Comprendre vraiment — à votre rythme, chez vous, en toute sérénité.</p>
+      </div>
+      <div class="hero-btns">
+        <a href="https://www.paypal.me/yaniskananga" target="_blank" class="btn btn-green xl">Je veux apprendre, à mon rythme →</a>
+        <a href="#tarifs" class="btn btn-outline lg">Voir les tarifs</a>
+      </div>
+      <div class="hero-checks">
+        <div class="chk"><span class="chk-ico">✓</span> Sans jargon technique</div>
+        <div class="chk"><span class="chk-ico">✓</span> Vidéos de 3 à 5 min</div>
+        <div class="chk"><span class="chk-ico">✓</span> IA disponible 24h/24</div>
+        <div class="chk"><span class="chk-ico">✓</span> 0€ pour commencer</div>
+      </div>
+      <div class="hero-gift">
+        🎁 <a href="#familles">Vous voulez l'offrir à vos parents ? Par ici →</a>
+      </div>
+    </div>
+    <div class="hero-vis">
+      <div class="hcard"><div class="hcard-ico">📸</div><div><div class="hcard-t">Envoyer une photo sur WhatsApp</div><div class="hcard-s">⏱ 4 min</div></div><span class="hbadge" style="background:#ddeeff;color:#2255a4">Photos</span></div>
+      <div class="hcard"><div class="hcard-ico">🔒</div><div><div class="hcard-t">Reconnaître une arnaque par SMS</div><div class="hcard-s">⏱ 5 min</div></div><span class="hbadge" style="background:#fde8e8;color:#c0392b">Sécurité</span></div>
+      <div class="hcard"><div class="hcard-ico">🏥</div><div><div class="hcard-t">Prendre un rendez-vous Doctolib</div><div class="hcard-s">⏱ 5 min</div></div><span class="hbadge" style="background:#e6f7ef;color:#2a9461">Santé</span></div>
+      <div class="hcard"><div class="hcard-ico">🔊</div><div><div class="hcard-t">Augmenter le volume</div><div class="hcard-s">⏱ 3 min</div></div><span class="hbadge" style="background:#e8edf8;color:#2d4a9e">Paramètres</span></div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══ STATS ══ -->
+<div class="stats">
+  <div class="stats-in">
+    <div class="stt"><span class="stt-n">9</span><span class="stt-l">Modules vidéo inclus</span></div>
+    <div class="stt"><span class="stt-n">3–5</span><span class="stt-l">Minutes par vidéo</span></div>
+    <div class="stt"><span class="stt-n">0 €</span><span class="stt-l">Pour commencer</span></div>
+    <div class="stt"><span class="stt-n">30 j</span><span class="stt-l">Satisfait ou remboursé</span></div>
+  </div>
+</div>
+
+
+<!-- ══ MODULES ══ -->
+<section class="section" id="modules">
+  <div class="container">
+    <div class="sh reveal">
+      <span class="tag">Les 9 modules</span>
+      <h2>Quel est votre problème <em>aujourd'hui ?</em></h2>
+      <p>Choisissez votre difficulté. Une vidéo claire et bienveillante vous attend — sans jargon, sans condescendance.</p>
+    </div>
+    <div class="filters reveal">
+      <button class="fbtn active" onclick="fm('tous',this)">Tous</button>
+      <button class="fbtn" onclick="fm('photos',this)">📸 Photos</button>
+      <button class="fbtn" onclick="fm('secu',this)">🔒 Sécurité</button>
+      <button class="fbtn" onclick="fm('params',this)">⚙️ Paramètres</button>
+      <button class="fbtn" onclick="fm('sante',this)">🏥 Santé</button>
+    </div>
+    <div class="mgrid">
+      <div class="mc reveal" data-cat="photos"><span class="mnum">Module 1</span><span class="micon">📸</span><div class="mtitle">Envoyer une photo sur WhatsApp</div><p class="mdesc">En 3 gestes simples, partagez vos plus beaux souvenirs avec vos proches — depuis votre canapé, sans aide.</p><p class="mben">Fini les "tu peux m'envoyer la photo de dimanche ?" — ils deviennent autonomes en un après-midi.</p><div class="mfoot"><span class="mtime">⏱ 4 min</span><span class="mtag" style="background:#ddeeff;color:#2255a4">Photos</span></div></div>
+      <div class="mc reveal" data-cat="secu" style="transition-delay:.06s"><span class="mnum">Module 2</span><span class="micon">🔒</span><div class="mtitle">Reconnaître une arnaque par SMS</div><p class="mdesc">Identifiez un message frauduleux en 10 secondes chrono, avant même de l'ouvrir.</p><p class="mben">Dormez sur vos deux oreilles — vos parents ne tomberont plus dans le piège des faux SMS bancaires.</p><div class="mfoot"><span class="mtime">⏱ 5 min</span><span class="mtag" style="background:#fde8e8;color:#c0392b">Sécurité</span></div></div>
+      <div class="mc reveal" data-cat="params" style="transition-delay:.12s"><span class="mnum">Module 3</span><span class="micon">🔊</span><div class="mtitle">Augmenter le volume</div><p class="mdesc">Finies les conversations inaudibles. Entendez chaque mot de vos appels et de vos vidéos, nettement.</p><p class="mben">Adieu le "je t'entends mal" — ils règlent le problème eux-mêmes en 30 secondes, avec fierté.</p><div class="mfoot"><span class="mtime">⏱ 3 min</span><span class="mtag" style="background:#e8edf8;color:#2d4a9e">Paramètres</span></div></div>
+      <div class="mc reveal" data-cat="params" style="transition-delay:.04s"><span class="mnum">Module 4</span><span class="micon">📋</span><div class="mtitle">Transférer un contact</div><p class="mdesc">Donnez le numéro du médecin, du plombier ou d'un ami en deux tapotements — proprement et sans erreur.</p><p class="mben">Plus besoin de vous appeler pour jouer l'intermédiaire. Ils partagent leurs contacts en toute autonomie.</p><div class="mfoot"><span class="mtime">⏱ 4 min</span><span class="mtag" style="background:#e8edf8;color:#2d4a9e">Paramètres</span></div></div>
+      <div class="mc reveal" data-cat="sante" style="transition-delay:.1s"><span class="mnum">Module 5</span><span class="micon">🏥</span><div class="mtitle">Prendre un RDV sur Doctolib</div><p class="mdesc">Trouver un médecin disponible et réserver un créneau en quelques minutes, à n'importe quelle heure.</p><p class="mben">Votre parent prend ses rendez-vous médicaux seul — même à 22h un dimanche soir.</p><div class="mfoot"><span class="mtime">⏱ 5 min</span><span class="mtag" style="background:#e6f7ef;color:#2a9461">Santé</span></div></div>
+      <div class="mc reveal" data-cat="params" style="transition-delay:.16s"><span class="mnum">Module 6</span><span class="micon">◼️</span><div class="mtitle">Scanner un QR code</div><p class="mdesc">Ces petits carrés noirs qui semblent mystérieux ? Après cette vidéo, ils n'auront plus aucun secret.</p><p class="mben">Au resto, au musée ou à la pharmacie — plus de "c'est quoi ça ?" ni de regards embarrassés.</p><div class="mfoot"><span class="mtime">⏱ 3 min</span><span class="mtag" style="background:#e8edf8;color:#2d4a9e">Paramètres</span></div></div>
+      <div class="mc reveal" data-cat="params" style="transition-delay:.06s"><span class="mnum">Module 7</span><span class="micon">🗑️</span><div class="mtitle">Vider le stockage</div><p class="mdesc">Récupérer de la place en quelques gestes et dire au revoir au message "espace insuffisant" pour toujours.</p><p class="mben">Plus de coup de fil paniqué "mon téléphone marche plus" — c'était juste la mémoire pleine.</p><div class="mfoot"><span class="mtime">⏱ 5 min</span><span class="mtag" style="background:#e8edf8;color:#2d4a9e">Paramètres</span></div></div>
+      <div class="mc reveal" data-cat="secu" style="transition-delay:.12s"><span class="mnum">Module 8</span><span class="micon">🚫</span><div class="mtitle">Éviter les appels frauduleux</div><p class="mdesc">Raccrocher sans culpabilité face aux faux conseillers bancaires et escrocs téléphoniques — c'est un droit.</p><p class="mben">Vos parents protègent leur argent eux-mêmes. Cette angoisse-là, vous pouvez enfin la lâcher.</p><div class="mfoot"><span class="mtime">⏱ 4 min</span><span class="mtag" style="background:#fde8e8;color:#c0392b">Sécurité</span></div></div>
+      <div class="mc bonus reveal" data-cat="bonus" style="transition-delay:.18s"><span class="mnum" style="color:#b8860b">Module Bonus ⭐</span><span class="micon">🌟</span><div class="mtitle">Bien démarrer avec son téléphone</div><p class="mdesc">Le module fondateur : comprendre les bases depuis zéro, sans peur, sans jargon, sans se sentir bête.</p><p class="mben">Le point de départ idéal si vos parents n'ont jamais vraiment appris. Tout repart sur de bonnes bases.</p><div class="mfoot"><span class="mtime">⏱ 5 min</span><span class="mtag" style="background:#fef3c7;color:#92610a">Bonus</span></div></div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══ PIONEER ══ -->
+<div class="pioneer">
+  <div class="pioneer-in reveal">
+    <div class="pio-badge">🎉 Offre de lancement — Places limitées</div>
+    <h2>Soyez membre fondateur</h2>
+    <p>On cherche nos 10 premiers membres pour un retour honnête — en échange d'un accès complet offert à vie.</p>
+    <div class="spots">
+      <div class="dots">
+        <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+        <div class="dot e"></div><div class="dot e"></div><div class="dot e"></div>
+        <div class="dot e"></div><div class="dot e"></div><div class="dot e"></div><div class="dot e"></div>
+      </div>
+      <span class="spots-t">3 places prises · Il en reste 7</span>
+    </div><br>
+    <a href="https://wa.me/33637311220?text=Bonjour%2C%20je%20voudrais%20devenir%20membre%20fondateur%20de%20Mon%20T%C3%A9l%C3%A9phone%20%26%20Moi%20%F0%9F%99%82" target="_blank" class="btn btn-blue lg">💬 Je veux tester gratuitement →</a>
+    <p style="font-size:.83rem;font-weight:700;color:#92610a;margin-top:1rem">Réponse garantie · Langage simple · Zéro jargon</p>
+  </div>
+</div>
+
+
+<!-- ══ CONFIANCE ══ -->
+<section class="section sect-alt" id="confiance">
+  <div class="container">
+    <div class="sh cx reveal">
+      <span class="tag">Pourquoi nous faire confiance</span>
+      <h2>Vous ne payez pas une grande entreprise.<br><em>Vous parlez à une vraie personne.</em></h2>
+      <p>Beaucoup de sites promettent. Voici ce que nous faisons concrètement.</p>
+    </div>
+    <div class="tgrid">
+      <div class="tc reveal"><div class="tico" style="background:#ddeeff">🔒</div><h3>Paiement 100% sécurisé</h3><p>Via PayPal — le système de paiement le plus utilisé en France. Votre argent est protégé à chaque étape.</p></div>
+      <div class="tc reveal" style="transition-delay:.08s"><div class="tico" style="background:#e6f7ef">↩️</div><h3>Remboursé sous 30 jours</h3><p>Pas satisfait ? Un simple message suffit. Remboursement intégral sans formulaire, sans délai, sans question posée.</p></div>
+      <div class="tc reveal" style="transition-delay:.16s"><div class="tico" style="background:#ddeeff">💬</div><h3>Une vraie personne répond</h3><p>Pas un robot, pas un formulaire. WhatsApp direct, réponse en moins de 24h, en français simple.</p></div>
+      <div class="tc reveal" style="transition-delay:.04s"><div class="tico" style="background:#e6f7ef">🇫🇷</div><h3>Site français, fait pour vous</h3><p>Doctolib, La Poste, arnaques françaises — tout est pensé pour votre quotidien. Pas une traduction d'un cours américain.</p></div>
+      <div class="tc reveal" style="transition-delay:.12s"><div class="tico" style="background:#ddeeff">👁️</div><h3>RGPD respecté</h3><p>Vos données vous appartiennent. Jamais vendues, jamais partagées. Suppression sur simple email, sans délai.</p></div>
+      <div class="tc reveal" style="transition-delay:.2s"><div class="tico" style="background:#fde8e8">🤝</div><h3>Un service de proximité</h3><p>On vous connaît par prénom. C'est comme demander de l'aide à un voisin de confiance — pas appeler un centre d'appel.</p></div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══ FONDATEUR ══ -->
+<section class="section sect-dark">
+  <div class="founder-in">
+    <div class="reveal" style="text-align:center">
+      <div class="found-av">🧑‍💻</div>
+      <blockquote class="found-q">"L'autonomie numérique, c'est une liberté que <em>tout le monde mérite.</em>"</blockquote>
+    </div>
+    <div class="found-r reveal" style="transition-delay:.15s">
+      <span class="tag">Votre créateur</span>
+      <h2>Bonjour, c'est moi qui vous réponds — personnellement.</h2>
+      <p>J'ai créé Mon Téléphone &amp; Moi après avoir regardé mes proches se sentir <strong style="color:rgba(255,255,255,.9)">exclus du monde numérique</strong>. Pas parce qu'ils sont incapables — mais parce que personne ne leur a jamais expliqué correctement.</p>
+      <p>Mon engagement : des vidéos courtes, claires, bienveillantes. Et quand vous écrivez, c'est moi qui réponds — en moins de 24h, en français simple, avec patience.</p>
+      <div class="fvals">
+        <div class="fval">💙 Bienveillance</div>
+        <div class="fval">⏳ Patience</div>
+        <div class="fval">✨ Simplicité</div>
+      </div>
+      <a href="https://wa.me/33637311220?text=Bonjour%2C%20j%27ai%20une%20question%20sur%20Mon%20T%C3%A9l%C3%A9phone%20%26%20Moi" target="_blank" class="btn btn-green md" style="margin-top:2rem">💬 Parler à une vraie personne →</a>
+      <p class="found-sub">Réponse en moins de 24h · Langage simple, zéro jargon</p>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══ TÉMOIGNAGES ══ -->
+<section class="section" id="temoignages">
+  <div class="container">
+    <div class="sh cx reveal">
+      <span class="tag">Témoignages</span>
+      <h2>Ce qu'ils disent, <em>avec leurs mots.</em></h2>
+    </div>
+    <div class="test-grid">
+      <div class="tcard reveal" style="background:#f0f6ff">
+        <div class="stars">★★★★★</div>
+        <p>"Ma fille m'a offert cette formation pour mon anniversaire. En deux semaines, j'envoie mes photos sur WhatsApp toute seule. Je me sens enfin à la hauteur !"</p>
+        <div class="tauthor"><div class="tav">M</div><div><div class="tname">Martine, 67 ans</div><div class="tloc">Lyon</div></div></div>
+      </div>
+      <div class="tcard reveal" style="transition-delay:.08s">
+        <div class="stars">★★★★★</div>
+        <p>"J'ai failli me faire arnaquer par un faux conseiller bancaire. Grâce au module Sécurité, je raccroche maintenant sans hésiter. Ça m'a probablement sauvé des milliers d'euros."</p>
+        <div class="tauthor"><div class="tav">R</div><div><div class="tname">Robert, 73 ans</div><div class="tloc">Bordeaux</div></div></div>
+      </div>
+      <div class="tcard reveal" style="background:#f0f6ff;transition-delay:.04s">
+        <div class="stars">★★★★★</div>
+        <p>"Les vidéos sont courtes, claires et sans jargon. J'ai pris 3 rendez-vous sur Doctolib cette semaine — seule ! Mon fils n'en revenait pas."</p>
+        <div class="tauthor"><div class="tav">J</div><div><div class="tname">Jacqueline, 69 ans</div><div class="tloc">Paris</div></div></div>
+      </div>
+      <div class="tcard reveal" style="transition-delay:.12s">
+        <div class="stars">★★★★★</div>
+        <p>"J'ai offert ça à ma mère et je n'ai plus reçu un seul appel de panique le dimanche soir depuis 2 mois. Investissement rentabilisé en une semaine."</p>
+        <div class="tauthor"><div class="tav">P</div><div><div class="tname">Pierre, fils de Simone (71 ans)</div><div class="tloc">Nantes</div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══ TARIFS ══ -->
+<section class="section sect-alt" id="tarifs">
+  <div class="container">
+    <div class="sh cx reveal">
+      <span class="tag">Tarifs</span>
+      <h2>Choisissez votre <em>formule</em></h2>
+      <p>Satisfait ou remboursé pendant 30 jours. Sans condition. Sans question.</p>
+    </div>
+    <div class="pgrid">
+
+      <div class="pc reveal">
+        <div class="pname">Découverte</div>
+        <div class="pnum"><sup>€</sup>0</div>
+        <div class="pper">pour toujours</div>
+        <ul class="pfeat">
+          <li><span class="pci">✓</span> Accès à 1 module gratuit</li>
+          <li><span class="pci">✓</span> Chatbot IA disponible</li>
+          <li><span class="pci">✓</span> Sans carte bancaire</li>
+        </ul>
+        <a href="https://www.paypal.me/yaniskananga" target="_blank" class="pbtn pb-out">Je commence gratuitement</a>
+        <p class="pnote">Aucune carte bancaire · Accès immédiat</p>
+      </div>
+
+      <div class="pc feat reveal" style="transition-delay:.1s">
+        <div class="pname">Complet</div>
+        <div class="pnum"><span>49</span><sup>€</sup></div>
+        <div class="pper">accès à vie</div>
+        <ul class="pfeat">
+          <li><span class="pci">✓</span> Les 9 modules vidéo</li>
+          <li><span class="pci">✓</span> Module Bonus débutant</li>
+          <li><span class="pci">✓</span> Chatbot IA illimité</li>
+          <li><span class="pci">✓</span> Mises à jour incluses</li>
+          <li><span class="pci">✓</span> Satisfait ou remboursé 30j</li>
+        </ul>
+        <a href="https://www.paypal.me/yaniskananga/49" target="_blank" class="pbtn pb-grn">Je prends la formation complète</a>
+        <p class="pnote">Paiement sécurisé PayPal · Remboursé si insatisfait</p>
+      </div>
+
+      <div class="pc reveal" style="transition-delay:.2s">
+        <div class="pname">Accompagné</div>
+        <div class="pnum"><span>89</span><sup>€</sup></div>
+        <div class="pper">tout inclus</div>
+        <ul class="pfeat">
+          <li><span class="pci">✓</span> Tout du pack Complet</li>
+          <li><span class="pci">✓</span> 1 session coaching individuel</li>
+          <li><span class="pci">✓</span> Suivi personnalisé par email</li>
+        </ul>
+        <a href="https://www.paypal.me/yaniskananga/89" target="_blank" class="pbtn pb-out">Je veux être accompagné(e)</a>
+        <p class="pnote">Paiement sécurisé PayPal · Remboursé si insatisfait</p>
+      </div>
+
+    </div>
+    <div class="pgift reveal">
+      🎁 <strong>Idée cadeau :</strong> vos parents autonomes = vous récupérez ~26h/an de support téléphonique.
+      <a href="https://www.paypal.me/yaniskananga/49" target="_blank">Offrir à vos parents →</a>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══ FAQ ══ -->
+<section class="section" id="faq">
+  <div class="container">
+    <div class="sh cx reveal">
+      <span class="tag">Questions fréquentes</span>
+      <h2>Vous avez des <em>questions ?</em></h2>
+    </div>
+    <div class="faq-wrap">
+      <div class="fitem reveal"><button class="fq" onclick="tf(this)">C'est compatible avec quel téléphone ?<span class="fq-ic">+</span></button><div class="fbody"><div class="fbody-in">✅ <strong>iPhone ET Android</strong>, les deux fonctionnent parfaitement. Les vidéos montrent les deux types d'appareils. Si vous ne savez pas quel téléphone vous avez, écrivez-nous sur WhatsApp avec une photo — on vous dit tout en 5 minutes.</div></div></div>
+      <div class="fitem reveal"><button class="fq" onclick="tf(this)">Et si je ne comprends pas une vidéo ?<span class="fq-ic">+</span></button><div class="fbody"><div class="fbody-in">C'est prévu ! Le chatbot IA intégré répond à toutes vos questions 24h/24. Et si vous préférez une vraie personne, on répond sur WhatsApp en moins de 24h, avec patience et sans jargon.</div></div></div>
+      <div class="fitem reveal"><button class="fq" onclick="tf(this)">Comment je regarde les vidéos ?<span class="fq-ic">+</span></button><div class="fbody"><div class="fbody-in">Directement sur votre téléphone, tablette ou ordinateur — depuis n'importe quel navigateur. Pas besoin de télécharger quoi que ce soit. Regardez et re-regardez autant de fois que vous voulez.</div></div></div>
+      <div class="fitem reveal"><button class="fq" onclick="tf(this)">Et si ça ne me convient pas ?<span class="fq-ic">+</span></button><div class="fbody"><div class="fbody-in">Vous avez 30 jours complets pour essayer. Si vous n'êtes pas satisfait — pour n'importe quelle raison — un simple message suffit pour un remboursement intégral. Sans formulaire, sans délai, sans question. Notre réputation vaut plus qu'une vente.</div></div></div>
+      <div class="fitem reveal"><button class="fq" onclick="tf(this)">C'est sécurisé pour payer ?<span class="fq-ic">+</span></button><div class="fbody"><div class="fbody-in">Le paiement se fait via <strong>PayPal</strong>, l'un des systèmes les plus sécurisés au monde. Vous êtes automatiquement protégé par la garantie acheteur PayPal en plus de notre propre garantie 30 jours.</div></div></div>
+      <div class="fitem reveal"><button class="fq" onclick="tf(this)">Mes données personnelles sont-elles protégées ?<span class="fq-ic">+</span></button><div class="fbody"><div class="fbody-in">Absolument. Nous respectons strictement le RGPD. Vos informations ne sont jamais vendues, jamais partagées avec des tiers. Suppression sur simple email.</div></div></div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══ FAMILLES ══ -->
+<section class="section sect-dark" id="familles">
+  <div class="fam-in">
+    <div class="fam-l reveal">
+      <span class="tag g">Pour les enfants &amp; les familles</span>
+      <h2>Vous expliquez le téléphone à vos parents <em>depuis 3 ans.</em></h2>
+      <p class="fscen">Le dimanche soir. Pendant les repas de famille. Sur votre pause déjeuner. En pleine réunion de travail.</p>
+      <div class="fquotes">
+        <div class="fqi">💬 "Comment j'envoie une photo ?"</div>
+        <div class="fqi">💬 "C'est quoi ce message bizarre ?"</div>
+        <div class="fqi">💬 "Pourquoi ça sonne plus ?"</div>
+      </div>
+      <div class="fhl">
+        <p>Le problème, c'est pas qu'ils ne comprennent pas. C'est que personne ne leur a jamais expliqué <strong>correctement</strong> — à leur rythme, dans leur langage, sans les faire se sentir bêtes.</p>
+      </div>
+      <p class="fres">C'est exactement ce que fait Mon Téléphone &amp; Moi. <strong>Le résultat ? Ils gèrent seuls. Vous récupérez vos dimanches. Et eux retrouvent quelque chose de précieux : leur fierté.</strong></p>
+      <a href="https://www.paypal.me/yaniskananga/49" target="_blank" class="btn btn-green xl">🎁 Offrir ce cadeau à mes parents →</a>
+      <p class="fsub">Paiement sécurisé PayPal · Remboursé sous 30j · À partir de 0€</p>
+    </div>
+    <div class="fcards reveal" style="transition-delay:.15s">
+      <div class="fcard"><span class="fcard-em">📞</span><h3>Fini les appels SOS du dimanche soir</h3><p>En moyenne, les enfants adultes passent <strong style="color:#7dd3b0">26h par an</strong> à jouer le support technique familial. Une seule formation à 49€ résout le problème une fois pour toutes.</p></div>
+      <div class="fcard"><span class="fcard-em">❤️</span><h3>Le vrai cadeau ? L'indépendance.</h3><p>Vos parents ne veulent pas qu'on fasse à leur place. Ils veulent apprendre à faire eux-mêmes — et retrouver leur fierté dans chaque petite victoire.</p></div>
+      <div class="fcard"><span class="fcard-em">🔍</span><h3>Vérifiez avant d'offrir</h3><p>Parcourez le site, regardez un module, posez-nous des questions sur WhatsApp. On est transparents. Si vous n'êtes pas convaincus, n'achetez pas.</p></div>
+      <div class="fcard"><span class="fcard-em">🏆</span><h3>Et eux retrouvent leur fierté</h3><p>Envoyer une photo seul, réserver chez Doctolib à 22h — ces victoires changent leur rapport au monde numérique.</p></div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══ FINAL CTA ══ -->
+<section class="final">
+  <div class="container">
+    <div class="reveal">
+      <span class="tag">Prêt(e) à commencer ?</span>
+      <h2>Votre téléphone, <em>enfin simple.</em></h2>
+      <p>Des vidéos courtes, claires, bienveillantes — pensées pour vous. Commencez gratuitement, sans carte bancaire, sans engagement.</p>
+      <a href="https://www.paypal.me/yaniskananga" target="_blank" class="btn btn-green xl">Je veux apprendre, à mon rythme →</a>
+      <div class="fbadges">
+        <div class="fbadge"><span class="ic">✓</span> Aucune carte bancaire demandée</div>
+        <div class="fbadge"><span class="ic">✓</span> Annulable à tout moment</div>
+        <div class="fbadge"><span class="ic">✓</span> Remboursé sous 30 jours</div>
+        <div class="fbadge"><span class="ic">✓</span> iPhone &amp; Android</div>
+        <div class="fbadge"><span class="ic">✓</span> Paiement sécurisé PayPal</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══ FOOTER ══ -->
+<footer>
+  <div class="foot-inner">
+    <div class="foot-top">
+      <div class="foot-logo">📱 Mon Téléphone <span class="amp">&amp;</span> Moi</div>
+      <div class="foot-links">
+        <a href="#">Mentions légales</a>
+        <a href="#">Politique de confidentialité</a>
+        <a href="#">CGV</a>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <div class="foot-copy">© 2025 Mon Téléphone &amp; Moi — Fait avec ❤️ pour les seniors de France · RGPD respecté</div>
+      <!--
+        ★ DERNIÈRE ÉTAPE : remplacez VOTRE_NOM_COMPLET par votre prénom + nom
+        Exemple :  Site édité par Yanis Kananga, SIRET en cours d'immatriculation
+      -->
+      <div class="foot-legal">
+        🛡️ Site édité par VOTRE_NOM_COMPLET · SIRET en cours d'immatriculation
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+<!-- ══ BOUTON WHATSAPP FLOTTANT ══ -->
+<a id="wa-btn"
+   href="https://wa.me/33637311220?text=Bonjour%2C%20j%27ai%20une%20question%20sur%20Mon%20T%C3%A9l%C3%A9phone%20%26%20Moi%20%F0%9F%99%82"
+   target="_blank" rel="noopener noreferrer">
+  <div class="wa-tip">Une question ? Écrivez-nous !</div>
+  <svg width="30" height="30" viewBox="0 0 32 32" fill="white">
+    <path d="M16 2C8.268 2 2 8.268 2 16c0 2.468.662 4.784 1.818 6.779L2 30l7.44-1.786A13.94 13.94 0 0016 30c7.732 0 14-6.268 14-14S23.732 2 16 2zm7.22 19.22c-.3.844-1.76 1.614-2.41 1.714-.617.095-1.39.135-2.244-.14a20.4 20.4 0 01-2.03-.752c-3.572-1.543-5.908-5.143-6.086-5.382-.178-.238-1.45-1.926-1.45-3.672 0-1.746.912-2.6 1.235-2.954.323-.354.705-.443.94-.443.234 0 .469.002.673.013.215.012.504-.082.789.6.3.71 1.016 2.454 1.105 2.632.088.178.148.385.03.623-.12.238-.178.385-.354.594-.178.208-.373.465-.532.624-.178.178-.362.37-.155.727.207.356.918 1.513 1.972 2.449 1.355 1.207 2.498 1.58 2.853 1.757.356.178.562.148.77-.09.208-.238.887-1.035 1.124-1.392.238-.356.474-.296.797-.178.324.118 2.057.97 2.41 1.147.356.178.592.267.68.415.088.148.088.862-.212 1.706z"/>
+  </svg>
+</a>
+
+
+<script>
+  /* NAV SCROLL */
+  window.addEventListener('scroll', () => {
+    document.getElementById('nav').classList.toggle('scrolled', scrollY > 60);
+    document.getElementById('wa-btn').classList.toggle('show', scrollY > 300);
+  });
+
+  /* MENU MOBILE */
+  function toggleMenu() {
+    const m = document.getElementById('nav-mobile');
+    m.style.display = m.style.display === 'flex' ? 'none' : 'flex';
+  }
+  function closeMenu() { document.getElementById('nav-mobile').style.display = 'none'; }
+
+  /* REVEAL AU SCROLL */
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); obs.unobserve(e.target); }});
+  }, { threshold: 0.08 });
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+  /* FAQ ACCORDÉON */
+  function tf(btn) {
+    const item = btn.parentElement;
+    const wasOpen = item.classList.contains('open');
+    document.querySelectorAll('.fitem').forEach(i => i.classList.remove('open'));
+    if (!wasOpen) item.classList.add('open');
+  }
+
+  /* FILTRE MODULES */
+  function fm(cat, btn) {
+    document.querySelectorAll('.fbtn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.mc').forEach(card => {
+      const match = cat === 'tous' || card.dataset.cat === cat;
+      card.style.transition = 'opacity .3s, transform .3s';
+      if (match) {
+        card.style.display = 'flex';
+        requestAnimationFrame(() => { card.style.opacity='1'; card.style.transform=''; });
+      } else {
+        card.style.opacity='0'; card.style.transform='scale(0.96)';
+        setTimeout(() => { card.style.display='none'; }, 300);
+      }
+    });
+  }
+
+  /* SMOOTH SCROLL */
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      const el = document.querySelector(a.getAttribute('href'));
+      if (el) { e.preventDefault(); el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+    });
+  });
+</script>
+
+</body>
+</html>
